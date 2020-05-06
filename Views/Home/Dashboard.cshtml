@@ -1,0 +1,223 @@
+﻿@using Syncfusion.EJ2
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+<style>
+
+    #total-expense {
+        display: block !important;
+    }
+</style>
+<h1 class="page-title" style="display: inline-block;margin-bottom: -2em; margin-top: 0.175em">Dashboard</h1>
+<div class="control-section">
+    <div style="width: 200px;">
+        @*Html.EJS().DateRangePicker("daterangepicker").Format("MM/dd/yyyy").AllowEdit(false).ShowClearButton(false).Change("onDateRangeChange").EndDate(@ViewBag.endDate).StartDate(@ViewBag.startDate).Render()*@
+        @*Html.EJS().DateRangePicker("daterangepicker").Format("MM/dd/yyyy").AllowEdit(false).ShowClearButton(false).Change("onDateRangeChange").EndDate(@ViewBag.endDate).StartDate(@ViewBag.startDate).Render()*@
+        @Html.EJS().DateRangePicker("daterangepicker").Format("MM/dd/yyyy").Change("onDateRangeChange").EndDate(@ViewBag.endDate).StartDate(@ViewBag.startDate).AllowEdit(false).Render()
+    </div>
+    <div class="row" style="margin-bottom: 16px;">
+
+        <div class="col-md-3 col-xs-12 col-xl-6 col-lg-3 daterange overview-range-picker">
+            @*@Html.EJS().DatePickerFor(Model => Model.objectValue).Width("255px").Render()*@
+            <div class="e-card card">
+                <div class="e-card-content">
+                    <h3 class="card-value" id="tolincome">$ @ViewBag.avgPrice.ToString("#,##0")</h3>
+                    <span class="card-text">Average Price</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-xl-3 col-lg-3 col-md-3 col-sm-6 card-container">
+            <div class="e-card card">
+                <div class="e-card-content">
+                    <h3 class="card-value" id='tolexpense'>$ @ViewBag.revenue.ToString("#,##0")</h3>
+                    <span class="card-text">Revenue</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-xl-3 col-lg-3 col-md-3 col-sm-6 card-container">
+            <div class="e-card card">
+                <div class="e-card-content">
+                    <h3 class="card-value" id="tolbalance">$ @ViewBag.shipping.ToString("#,##0")</h3>
+                    <span class="card-text">Shipping Expenses</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-xl-3 col-lg-3 col-md-3 col-sm-6 card-container">
+            <div class="e-card card">
+                <div class="e-card-content">
+                    <h3 class="card-value" id="toltransaction">$ @ViewBag.netRev.ToString("#,##0")</h3>
+                    <span class="card-text">Net Revenue</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class='pie-chart-container'>
+    <div class="row pie-chart" id='totalExpense'>
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="pane col-xs-12 col-sm-12 col-md-12 pie-container">
+                <div class="pieChartHeader">
+                    <p class="chart-title">Purchases by State (Brazil)</p>
+                    <p id="rangeDate" class="chart-value"></p>
+                </div>
+                <div class="row">
+                    <!-- pie chart -->
+                    <div class="pieChart">
+                        @Html.EJS().AccumulationChart("total-expense").Series(series =>
+                        {
+                            series.Type(Syncfusion.EJ2.Charts.AccumulationType.Pie)
+                            //.DataLabel(s1 => s1.Name("x").Visible(true).Position(Syncfusion.EJ2.Charts.AccumulationLabelPosition.Outside).ConnectorStyle(c1 => c1.Length("10%")).Font(f1 => f1.Color("Black").Size("14px").FontFamily("Roboto")))
+                            //.DataLabel(dl => dl.Visible(true).Name("text"))
+                       .EndAngle(360)
+                       .InnerRadius("50%")
+                       .DataSource(ViewBag.pieDataSource)
+                       .XName("text")
+                       .YName("y").Radius("83%").StartAngle(0).Animation(ViewBag.animation)
+                       .Palettes(ViewBag.palettes)
+                       .Add();
+                        }).EnableSmartLabels(true).Width("100%").Height("350px").TextRender("textRender").LegendSettings(ls => ls.Visible(true)).Render()
+                    </div>
+                    <!-- chart legend -->
+                    <div class="chartLegend" style="margin: 0 auto;">
+                        <div style="position: relative">
+                            <div class="legend-waitingpopup" id="grid-popup" style="display:none">
+                                <span class="legend-image">
+                                    <svg class="e-spin-material" viewBox="0 0 30 30">
+                                        <path class="e-path-circle" stroke-width="3" d="M15,1.5A13.5,13.5 0 1 1 1.5,15" stroke-dasharray="63.61725123519331" stroke-dashoffset="190.0035236891107"
+                                              transform="rotate(-90 15 15)"></path>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                        @Html.EJS().Grid("legend-grid").Width("100%").RowTemplate("#rowtemplate").Columns(columns =>
+                 {
+                     columns.Field("color").Width("10%").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Add();
+                     columns.Field("text").Width("50%").Add();
+                     columns.Field("y").Width("20%").Add();
+                     columns.Field("x").Width("20%").Add();
+                 }).DataSource(ViewBag.pieDataSource).Load("load").DataBound("dataBound").Render()
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div>
+        <div class="line-chart-area">
+            <div class="col-xs-12 col-sm-6 col-md-6 chart-container">
+                <div class="chart-padding">
+                    <div class="line-chart" style="width:100%; max-width: 494px;">
+                        @Html.EJS().Chart("balance").Series(series =>
+                     {
+                         series.Type(Syncfusion.EJ2.Charts.ChartSeriesType.Area).XName("x").Width(2)
+                         .YName("y").Fill("rgba(4, 112, 216, 0.3)").Border(ViewBag.border)
+                         .DataSource(ViewBag.lineDS).Add();
+                     }).PrimaryXAxis(px => px.Interval(1).ValueType(Syncfusion.EJ2.Charts.ValueType.Category)
+   .IsIndexed(true)).Title("Purchase Amount per Month").Render()
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column-chart-area">
+            <div class="col-xs-12 col-sm-6 col-md-6 chart-container">
+                <div class="chart-padding">
+                    @Html.EJS().Chart("account-balance").Series(series =>
+   {
+                    series.Type(Syncfusion.EJ2.Charts.ChartSeriesType.Bar).
+                   XName("months").
+                   YName("sellers").
+                   DataSource(ViewBag.barDS).
+                   Add();
+
+                    series.Type(Syncfusion.EJ2.Charts.ChartSeriesType.Bar).
+                   XName("months").
+                   YName("buyers").
+                   DataSource(ViewBag.barDS).
+                   Add();
+       }).PrimaryXAxis(px => px.Interval(1).ValueType(Syncfusion.EJ2.Charts.ValueType.Category)
+                    .IsIndexed(true)).Title("Number of Buyers and Sellers per Month").Render()
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row recent-expense-grid">
+        <div class="col-xs-6 col-sm-6 col-md-12" style="width:100%">
+            @Html.EJS().Grid("recentexpense-grid").DataSource((IEnumerable<object>)ViewBag.dsTable).AllowSorting(true).Columns(columns =>
+            {
+            //columns.Field("orderDate").HeaderText("Order Date").Width("300").Format("yMd").Add();
+            columns.Field("orderDate").HeaderText("Order Date").Width("300").Format("yMd").Add();
+
+                     columns.Field("category").HeaderText("Category").Width("250").Add();
+            columns.Field("payment").HeaderText("Payment Type").Width("200").Add();
+            columns.Field("price").HeaderText("Price").Add();
+            columns.Field("shipping").HeaderText("Shipping").Width("150").Add();
+            }).Render()
+        </div>
+    </div>
+</div>
+<script id="rowtemplate" type="text/x-template">
+    <tr style="height: 30px;">
+        <td>
+            <div style="width: 16px; height: 16px; margin-left: 1px; border-radius: 16px; background:${color}"></div>
+        </td>
+        <td> ${text} </td>
+        <td> ${getCurrencyVal(data.y)} </td>
+        <td style="text-align:right;"> ${x} </td>
+    </tr>
+</script>
+<script id="template" type="text/x-template">
+    <div class="normalRes">
+        <div class="category-icon ${Category}"></div>
+        <div class='category-text'>${Category}</div>
+    </div>
+    <div class="mediumRes">
+        <div>
+            <div class="category-icon ${Category}"></div>
+        </div>
+        <div>
+            <div> ${Category} </div>
+            <div class="description-section"> ${Description} </div>
+        </div>
+    </div>
+    <div class="smallRes">
+        <div class='sm-category sm-icon'>
+            <div class="category-icon ${Category}"></div>
+        </div>
+        <div class='sm-category category-content'>
+            <div> ${Category} </div>
+            <div class="description-section"> ${Description} </div>
+            <div> ${PaymentMode} </div>
+        </div>
+    </div>
+</script>
+<script id="amtTemplate" type="text/x-template">
+    <div class="normalRes">
+        <div class='amt-payment ${TransactionType}'>
+            <span>$</span> <span>${Amount}</span>
+        </div>
+    </div>
+    <div class="mediumRes">
+        <div class='amt-payment ${TransactionType}'>
+            <span>$</span> <span>${Amount}</span>
+        </div>
+        <div>${getDate(data.DateTime)}</div>
+    </div>
+    <div class="smallRes">
+        <div class='amt-payment ${TransactionType}'>
+            <span>$</span> <span>${Amount}</span>
+        </div>
+        <div>${getDate(data.DateTime)}</div>
+    </div>
+</script>
+<script id="dateTemplate" type="text/x-template">
+    ${getDate(data.DateTime)}
+</script>
+</div>
+<!--<pre id="testel"> </pre>-->
+@Html.EJS().ScriptManager()
+
